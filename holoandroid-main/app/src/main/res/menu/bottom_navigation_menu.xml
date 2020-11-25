@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/pageTinNhan"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="@string/nav_tin_nhan" />
+    <item
+        android:id="@+id/pageDanhBa"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_perm_contact_calendar_24"
+        android:title="@string/nav_danh_ba" />
+    <item
+        android:id="@+id/pageNhom"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_group_24"
+        android:title="@string/nav_nhom" />
+    <item
+        android:id="@+id/pageTaiKhoan"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/nav_tai_khoan" />
+</menu>

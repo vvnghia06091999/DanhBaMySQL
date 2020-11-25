@@ -1,0 +1,9 @@
+{
+    "database": {
+        "user": "admin",
+        "password": "sapassword",
+        "server": "chat.cuw6erenlmkh.ap-southeast-1.rds.amazonaws.com",
+        "database": "chat",
+        "dialect": "mysql"
+    }
+}
