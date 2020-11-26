@@ -43,7 +43,8 @@ public class DanhBaFragment extends Fragment {
     private List<RelationshipRespone> relationshipRespones = new ArrayList<>();
     private ImageView img_buttonAdd;
     private DanhBaAdapter danhBaAdapter;
-    private  List<UserResponse> userResponses = new ArrayList<>() ;
+    private List<UserResponse> userResponses = new ArrayList<>() ;
+    private int id;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -93,7 +94,8 @@ public class DanhBaFragment extends Fragment {
 
         View view=inflater.inflate(R.layout.fragment_danh_ba, container, false);
         recyclerView=(RecyclerView) view.findViewById(R.id.rv_danhBa1);
-        initList(1);
+        id = 1;
+        initList(id);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         img_buttonAdd=(ImageView) view.findViewById(R.id.img_buttonAdd);

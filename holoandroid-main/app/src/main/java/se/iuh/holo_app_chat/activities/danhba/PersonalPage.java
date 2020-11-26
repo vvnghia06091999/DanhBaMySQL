@@ -1,9 +1,11 @@
 package se.iuh.holo_app_chat.activities.danhba;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,13 +25,19 @@ import se.iuh.holo_app_chat.untils.ServieceDanhBa;
 
 public class PersonalPage extends AppCompatActivity {
     private TextView txt_tenNGuoiDung,txt_gioiTinh,txt_ngaySinh,txt_email;
-    private ImageView img_backPP,img_anhBia,img_anhDaiDien;
+    private ImageView img_anhBia,img_anhDaiDien;
     private Button btn_nhanTin,btn_ketBan,btn_huyKetBan,btn_chapNhanKetBan,btn_HuyYeuCau;
     private String idUser1,idUser2,status;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_page);
+
+        toolbar=(Toolbar) findViewById(R.id.app_bar_idAF);
+        toolbar.setTitle("Trang cá nhân");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         txt_tenNGuoiDung=(TextView) findViewById(R.id.txt_tenNDPP);
         txt_gioiTinh=(TextView) findViewById(R.id.txt_GioiTinhPP);
@@ -38,7 +46,6 @@ public class PersonalPage extends AppCompatActivity {
 
         img_anhBia=(ImageView) findViewById(R.id.img_anhBiaPP);
         img_anhDaiDien=(ImageView) findViewById(R.id.img_avatarPP);
-        img_backPP=(ImageView) findViewById(R.id.img_backPP);
 
         btn_nhanTin=(Button) findViewById(R.id.btn_NhanTinPP);
         btn_ketBan=(Button) findViewById(R.id.btn_KetBanPP);
@@ -49,28 +56,12 @@ public class PersonalPage extends AppCompatActivity {
         idUser1 = getIntent().getExtras().getString("idUser1");
         idUser2 = getIntent().getExtras().getString("idUser2");
         status = getIntent().getExtras().getString("status");
-        img_backPP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(PersonalPage.this, AddFriend.class);
-                i.putExtra("id",new String(idUser1+""));
-                startActivity(i);
-            }
-        });
         if (status.equals("0")){
             btn_huyKetBan.setVisibility(View.INVISIBLE);
             btn_ketBan.setVisibility(View.VISIBLE);
             btn_HuyYeuCau.setVisibility(View.INVISIBLE);
             btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
         }else  if (status.equals("1")){
-            img_backPP.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(PersonalPage.this, DashboardActivity.class);
-                    i.putExtra("gd",new String("DanhBa"));
-                    startActivity(i);
-                }
-            });
             btn_huyKetBan.setVisibility(View.VISIBLE);
             btn_ketBan.setVisibility(View.INVISIBLE);
             btn_HuyYeuCau.setVisibility(View.INVISIBLE);
@@ -223,5 +214,27 @@ public class PersonalPage extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                //home la id mac dinh cho nut quay lai onBackPressed quay lai trang luc nãy
+                if (status.equals("1")){
+                    Intent i = new Intent(PersonalPage.this, DashboardActivity.class);
+                    i.putExtra("gd",new String("DanhBa"));
+                    startActivity(i);
+                }else{
+                    Intent i = new Intent(PersonalPage.this, AddFriend.class);
+                    i.putExtra("id",new String(idUser1+""));
+                    startActivity(i);
+                }
+                return true;
+            default:break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

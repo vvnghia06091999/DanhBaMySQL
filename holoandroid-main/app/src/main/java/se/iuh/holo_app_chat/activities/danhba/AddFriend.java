@@ -1,11 +1,13 @@
 package se.iuh.holo_app_chat.activities.danhba;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,22 +31,27 @@ import se.iuh.holo_app_chat.untils.ServieceDanhBa;
 public class AddFriend extends AppCompatActivity {
     private Button btn_tim;
     private EditText edt_nhapSDT;
-    private ImageView img_back;
     private RecyclerView rv_listRequest;
     private List<UserResponse> userResponses = new ArrayList<>() ;
     private List<RelationshipRespone> relationshipRespones = new ArrayList<>();
     private FriendRequestAdapter friendRequestAdapter;
     private int id;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
+
+        toolbar=(Toolbar) findViewById(R.id.app_bar_idPP);
+        toolbar.setTitle("Thêm Bạn Bè");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         rv_listRequest=(RecyclerView) findViewById(R.id.rv_listViewAF);
         rv_listRequest.setHasFixedSize(true);
         rv_listRequest.setLayoutManager(new LinearLayoutManager(AddFriend.this));
         btn_tim=(Button) findViewById(R.id.btn_tim);
         edt_nhapSDT=(EditText) findViewById(R.id.edt_nhapSdt);
-        img_back=(ImageView) findViewById(R.id.img_back);
         String stid =  getIntent().getExtras().getString("id");
         id = Integer.parseInt(stid);
         initList(id);
@@ -57,14 +64,6 @@ public class AddFriend extends AppCompatActivity {
             }
         });
 
-        img_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(AddFriend.this, DashboardActivity.class);
-                i.putExtra("gd",new String("DanhBa"));
-                startActivity(i);
-            }
-        });
     }
 
     private void initList(final int id) {
@@ -192,4 +191,19 @@ public class AddFriend extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                //home la id mac dinh cho nut quay lai onBackPressed quay lai trang luc nãy
+                Intent i = new Intent(AddFriend.this, DashboardActivity.class);
+                i.putExtra("gd",new String("DanhBa"));
+                startActivity(i);
+                return true;
+            default:break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }
