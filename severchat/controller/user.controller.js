@@ -7,8 +7,24 @@ router.get('/', getAll);
 router.post('/', addUser);
 router.get('/:id', getByID);
 router.get('/getUseByPhone/:phone', getByPhone);
+//router.get('/Friend/:id', getFriend);
 
 module.exports = router;
+
+// function getFriend(req,res){
+//   const id = req.params.id;
+//   const sql1 = "select * from Users u join Relationships ";
+//   const sql2 = "where r.status like "+"1"+" and ";
+//   const sql3 = "(r.idUser1 = "+id+" or r.idUser2 = "+id+") and u.id <> "+id;
+//   db.sequelize.query(sql1+sql2+sql3).then(data => {
+//     res.send(data);
+//   }).catch(err => {
+//     res.status(500).send({
+//       message:
+//         err.message || "Ko tim duoc."
+//     });
+//   });
+//}
 
 function getByPhone(req,res){
   const phone = req.params.phone;

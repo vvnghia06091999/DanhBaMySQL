@@ -5,6 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.danhba.AddFriend">
+
+    <Button
+        android:id="@+id/btn_timdanhba"
+        android:layout_width="395dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="180dp"
+        android:background="@drawable/round_bg_primary"
+        android:text="Tìm từ danh bạ"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:text="Tìm theo số điện thoại"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <include
         android:id="@+id/app_bar_idPP"
         layout="@layout/app_bar"
@@ -14,7 +40,7 @@
         android:id="@+id/view2"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
-        android:layout_marginTop="196dp"
+        android:layout_marginTop="268dp"
         android:background="#dcdcdc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,8 +56,8 @@
 
     <EditText
         android:id="@+id/edt_nhapSdt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="286dp"
+        android:layout_height="46dp"
         android:layout_marginTop="105dp"
         android:ems="10"
         android:hint="Nhập số điện thoại"
@@ -50,12 +76,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="168dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="236dp"
         android:text="Lời Mời Kết Bạn"
         android:textColor="@android:color/black"
         android:textSize="16sp"
@@ -63,14 +90,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_listViewAF"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="220dp"
+        android:layout_width="407dp"
+        android:layout_height="452dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

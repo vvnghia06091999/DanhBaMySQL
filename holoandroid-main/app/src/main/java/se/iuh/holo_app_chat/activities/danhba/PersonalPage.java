@@ -1,8 +1,14 @@
 package se.iuh.holo_app_chat.activities.danhba;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -11,6 +17,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+import com.github.nkzawa.emitter.Emitter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URISyntaxException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,9 +43,20 @@ public class PersonalPage extends AppCompatActivity {
     private ImageView img_anhBia,img_anhDaiDien;
     private Button btn_nhanTin,btn_ketBan,btn_huyKetBan,btn_chapNhanKetBan,btn_HuyYeuCau;
     private String idUser1,idUser2,status;
+    private NotificationManagerCompat notificationManagerCompat;
     private Toolbar toolbar;
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://54.255.234.239:3000");
+        } catch (URISyntaxException e) {}
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        notificationManagerCompat = NotificationManagerCompat.from(this);
+        mSocket.on("GuiKetBan", GuiKetBan);
+        mSocket.connect();
+        mSocket.on("Server", Sever);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_page);
 
@@ -38,6 +64,7 @@ public class PersonalPage extends AppCompatActivity {
         toolbar.setTitle("Trang cá nhân");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         txt_tenNGuoiDung=(TextView) findViewById(R.id.txt_tenNDPP);
         txt_gioiTinh=(TextView) findViewById(R.id.txt_GioiTinhPP);
@@ -56,33 +83,30 @@ public class PersonalPage extends AppCompatActivity {
         idUser1 = getIntent().getExtras().getString("idUser1");
         idUser2 = getIntent().getExtras().getString("idUser2");
         status = getIntent().getExtras().getString("status");
-        if (status.equals("0")){
-            btn_huyKetBan.setVisibility(View.INVISIBLE);
-            btn_ketBan.setVisibility(View.VISIBLE);
-            btn_HuyYeuCau.setVisibility(View.INVISIBLE);
-            btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
-        }else  if (status.equals("1")){
-            btn_huyKetBan.setVisibility(View.VISIBLE);
-            btn_ketBan.setVisibility(View.INVISIBLE);
-            btn_HuyYeuCau.setVisibility(View.INVISIBLE);
-            btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
-        }else  if (status.equals("2")){
-            btn_huyKetBan.setVisibility(View.INVISIBLE);
-            btn_ketBan.setVisibility(View.INVISIBLE);
-            btn_HuyYeuCau.setVisibility(View.VISIBLE);
-            btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
-        }else  if (status.equals("3")){
-            btn_huyKetBan.setVisibility(View.INVISIBLE);
-            btn_ketBan.setVisibility(View.INVISIBLE);
-            btn_HuyYeuCau.setVisibility(View.INVISIBLE);
-            btn_chapNhanKetBan.setVisibility(View.VISIBLE);
-        }
+
+        initButton(status);
         init();
+
         btn_huyKetBan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(PersonalPage.this);
+                builder.setMessage("Bạn có muốn xóa bạn bè ?");
+                builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteRelationship();
+                    }
+                });
                 //Toast.makeText(PersonalPage.this,btn_huyKetBan.getText()+"",Toast.LENGTH_SHORT).show();
-                deleteRelationship();
+                builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
         btn_ketBan.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +130,7 @@ public class PersonalPage extends AppCompatActivity {
                 deleteRelationship();
             }
         });
+
     }
 
     private void init(){
@@ -130,6 +155,7 @@ public class PersonalPage extends AppCompatActivity {
             }
         });
     }
+
     private void deleteRelationship(){
         final RelationshipServiece relationshipServiece = ServieceDanhBa.createService(RelationshipServiece.class);
         Call<RelationshipRespone> relationshipResponeCall = relationshipServiece.getRelationship(idUser1+"",idUser2+"");
@@ -142,11 +168,7 @@ public class PersonalPage extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         //Toast.makeText(PersonalPage.this,"Xoa ban thanh cong",Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(PersonalPage.this,PersonalPage.class);
-                        i.putExtra("idUser1",new String(idUser1+""));
-                        i.putExtra("idUser2",new String(idUser2+""));
-                        i.putExtra("status",new String("0")); // Ket Ban
-                        startActivity(i);
+                        mSocket.emit("Update","Update");
                     }
 
                     @Override
@@ -175,11 +197,8 @@ public class PersonalPage extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                        // Toast.makeText(context,"Them thanh cong",Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(PersonalPage.this,PersonalPage.class);
-                        i.putExtra("idUser1",new String(idUser1+""));
-                        i.putExtra("idUser2",new String(idUser2+""));
-                        i.putExtra("status",new String("1")); //Huy Ket Ban
-                        startActivity(i);
+                        mSocket.emit("Update","Update");
+                        mSocket.emit("ChapNhanKetBan",idUser2);
                     }
 
                     @Override
@@ -201,12 +220,8 @@ public class PersonalPage extends AppCompatActivity {
         relationshipResponeCall.enqueue(new Callback<RelationshipRespone>() {
             @Override
             public void onResponse(Call<RelationshipRespone> call, Response<RelationshipRespone> response) {
-                RelationshipRespone relationshipRespone = response.body();
-                Intent i = new Intent(PersonalPage.this,PersonalPage.class);
-                i.putExtra("idUser1",new String(idUser1+""));
-                i.putExtra("idUser2",new String(idUser2+""));
-                i.putExtra("status",new String("2")); //Huy Yeu Cau
-                startActivity(i);
+                mSocket.emit("Update","Update");
+                mSocket.emit("GuiKetBan",idUser2);
             }
 
             @Override
@@ -221,12 +236,9 @@ public class PersonalPage extends AppCompatActivity {
         switch (item.getItemId())
         {
             case android.R.id.home:
-                //home la id mac dinh cho nut quay lai onBackPressed quay lai trang luc nãy
-                if (status.equals("1")){
-                    Intent i = new Intent(PersonalPage.this, DashboardActivity.class);
-                    i.putExtra("gd",new String("DanhBa"));
-                    startActivity(i);
-                }else{
+                if(status.equals("1"))
+                    finish();
+                else{
                     Intent i = new Intent(PersonalPage.this, AddFriend.class);
                     i.putExtra("id",new String(idUser1+""));
                     startActivity(i);
@@ -237,4 +249,93 @@ public class PersonalPage extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private Emitter.Listener Sever = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final RelationshipServiece relationshipServiece = ServieceDanhBa.createService(RelationshipServiece.class);
+                    Call<RelationshipRespone> relationshipResponeCall = relationshipServiece.getRelationship(idUser1,idUser2);
+                    relationshipResponeCall.enqueue(new Callback<RelationshipRespone>() {
+                        @Override
+                        public void onResponse(Call<RelationshipRespone> call, Response<RelationshipRespone> response) {
+
+                            RelationshipRespone relationshipRespone = response.body();
+                            initButton(relationshipRespone.getStatus());
+                        }
+
+                        @Override
+                        public void onFailure(Call<RelationshipRespone> call, Throwable t) {
+                            //Toast.makeText(AddFriend.this,t.getMessage()+"ERROR",Toast.LENGTH_LONG).show();
+                            initButton("0");
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+    private void initButton(String status){
+        if (status.equals("0")){
+            btn_huyKetBan.setVisibility(View.INVISIBLE);
+            btn_ketBan.setVisibility(View.VISIBLE);
+            btn_HuyYeuCau.setVisibility(View.INVISIBLE);
+            btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
+        }else  if (status.equals("1")){
+            btn_huyKetBan.setVisibility(View.VISIBLE);
+            btn_ketBan.setVisibility(View.INVISIBLE);
+            btn_HuyYeuCau.setVisibility(View.INVISIBLE);
+            btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
+        }else  if (status.equals("2")){
+            btn_huyKetBan.setVisibility(View.INVISIBLE);
+            btn_ketBan.setVisibility(View.INVISIBLE);
+            btn_HuyYeuCau.setVisibility(View.VISIBLE);
+            btn_chapNhanKetBan.setVisibility(View.INVISIBLE);
+        }else  if (status.equals("3")){
+            btn_huyKetBan.setVisibility(View.INVISIBLE);
+            btn_ketBan.setVisibility(View.INVISIBLE);
+            btn_HuyYeuCau.setVisibility(View.INVISIBLE);
+            btn_chapNhanKetBan.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private Emitter.Listener GuiKetBan = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String idu;
+                    try {
+                        idu = data.getString("tinNhan");
+                        if(idu.equals(idUser1+"")){
+                            // THong bao co loi moi ket ban
+                            notifi();
+                        }
+                    } catch ( JSONException e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+    private void notifi(){
+        String title = "Thông Báo";
+        String me = "Có lời mời kết bạn mới!";
+        Intent i = new Intent(this, AddFriend.class);
+        i.putExtra("id",idUser1+"");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new NotificationCompat.Builder(this, null)
+                .setSmallIcon(R.drawable.ic_baseline_add_24)
+                .setContentTitle(title)
+                .setContentIntent(pendingIntent)
+                .setContentText(me).setPriority(NotificationCompat.PRIORITY_HIGH).build();
+        notificationManagerCompat.notify(0,notification);
+    }
+
 }

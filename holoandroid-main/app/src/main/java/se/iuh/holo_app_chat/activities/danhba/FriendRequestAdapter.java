@@ -13,6 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
+import java.net.URISyntaxException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,11 +33,18 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
     private Context context;
     private List<UserResponse> listDB;
     private int id;
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://54.255.234.239:3000");
+        } catch (URISyntaxException e) {}
+    }
 
     public FriendRequestAdapter(Context context, List<UserResponse> listDB, int id) {
         this.context = context;
         this.listDB = listDB;
         this.id = id;
+        mSocket.connect();
     }
 
     @NonNull
@@ -73,6 +84,8 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
                 @Override
                 public void onClick(View v) {
                     updateRelationship(txt_id.getText()+"");
+                    mSocket.emit("Update","Update");
+                    mSocket.emit("ChapNhanKetBan",txt_id.getText().toString());
                 }
             });
 
@@ -80,6 +93,7 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
                 @Override
                 public void onClick(View v) {
                     deleteRelationship(txt_id.getText()+"");
+                    mSocket.emit("Update","Update");
                 }
             });
             itemView.setOnClickListener(new View.OnClickListener() {
